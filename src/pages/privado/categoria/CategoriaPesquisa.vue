@@ -3,7 +3,7 @@
     <q-dialog v-model="dialogNovaCategoria">
       <q-card style="min-width:60%">
         <q-card-section>
-          <div class="text-10">Categoria </div>
+          <div class="text-10">Categoria</div>
         </q-card-section>
         <q-card-section>
           <q-input
@@ -14,6 +14,9 @@
             counter
             maxlength="50"
             v-model="categoriaNova.nome"
+            :disable="desabilitarEdicao"
+            lazy-rules
+            :rules="[val => val && val.length > 0 || 'Nome é obrigatório']"
             dense>
           </q-input>
         </q-card-section>
@@ -31,6 +34,7 @@
             color="positive"
             label="Salvar"
             type="submit"
+            :disable="desabilitarEdicao"
             @click="salvar">
             </q-btn>
           </div>
@@ -88,7 +92,7 @@
                   </q-td>
 
                   <q-td class="col-md-1">
-                    <q-btn flat dense size="sm" color="red" icon="fas fa-trash-alt" @click="excluirCategoria(categoria)"/>
+                    <q-btn flat dense size="sm" color="red" icon="fas fa-trash-alt" @click="confirmarExclusao(categoria)"/>
                   </q-td>
                 </div>
               </q-tr>
@@ -106,14 +110,38 @@ export default {
       nomePesquisa: '',
       categoriaList: [],
       categoriaNova: {},
-      dialogNovaCategoria: false
+      dialogNovaCategoria: false,
+      desabilitarEdicao: false
     }
   },
   methods: {
 
     salvar () {
-
+      this.$refs.refCategoriaNova.validate()
+      if (this.$refs.refCategoriaNova.hasError) {
+        this.formHasError = true
+      } else {
+        if (!this.categoriaNova.codigo) {
+          this.$axios.post(api.CATEGORIA, this.categoriaNova).then((result) => {
+            util.mensagemSucessoAoSalvar()
+            this.listarCategoria()
+            this.limparObjetoCategoriaAoSalvar()
+          }).catch((error) => {
+            util.mensagemFalha(error)
+          })
+        } else {
+          var filtro = '/'.concat(this.categoriaNova.codigo)
+          this.$axios.put(api.CATEGORIA.concat(filtro), this.categoriaNova).then((result) => {
+            util.mensagemSucessoAoAtualizar()
+            this.limparObjetoCategoriaAoSalvar()
+            this.listarCategoria()
+          }).catch((error) => {
+            util.mensagemFalha(error)
+          })
+        }
+      }
     },
+
     listarCategoria () {
       this.$axios.get(api.CATEGORIA).then((result) => {
         this.categoriaList = result.data
@@ -130,13 +158,37 @@ export default {
       })
     },
     visualizarCategoria (categoria) {
-
+      this.categoriaNova = categoria
+      this.dialogNovaCategoria = true
+      this.desabilitarEdicao = true
     },
     editarCategoria (categoria) {
-
+      this.categoriaNova = categoria
+      this.dialogNovaCategoria = true
+      this.desabilitarEdicao = false
     },
     excluirCategoria (categoria) {
-
+      var filtro = '/'.concat(categoria.codigo)
+      this.$axios.delete(api.CATEGORIA.concat(filtro)).then((result) => {
+        util.mensagemSucessoAoDeletar()
+        this.listarCategoria()
+      }).catch((error) => {
+        util.mensagemFalha(error)
+      })
+    },
+    confirmarExclusao (categoria) {
+      this.$q.dialog({
+        title: 'Excluir',
+        message: 'Deseja realmente excluir a categoria '.concat(categoria.nome).concat('?'),
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        this.excluirCategoria(categoria)
+      })
+    },
+    limparObjetoCategoriaAoSalvar () {
+      this.categoriaNova = {}
+      this.dialogNovaCategoria = false
     }
   },
   mounted () {

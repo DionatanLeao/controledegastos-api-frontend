@@ -19,6 +19,11 @@ const routes = [
         name: 'lancamentoPesquisa',
         path: '/privado/lancamento/pesquisa',
         component: () => import('pages/privado/lancamento/LancamentoPesquisa.vue')
+      },
+      {
+        name: 'lancamentoCadastro',
+        path: '/privado/lancamento/cadastro',
+        component: () => import('pages/privado/lancamento/LancamentoCadastro.vue')
       }
     ]
   }

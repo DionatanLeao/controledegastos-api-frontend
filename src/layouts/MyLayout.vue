@@ -33,7 +33,7 @@
           </q-item-section>
           <q-item-section>
             <q-item to="/privado/categoria/pesquisa">
-              <q-item-label>Categoria</q-item-label>
+              <q-item-label>Categorias</q-item-label>
             </q-item>
           </q-item-section>
         </q-item>
@@ -44,7 +44,7 @@
           </q-item-section>
           <q-item-section>
             <q-item to="/privado/pessoa/pesquisa">
-              <q-item-label>Pessoa</q-item-label>
+              <q-item-label>Pessoas</q-item-label>
             </q-item>
           </q-item-section>
         </q-item>
@@ -55,7 +55,7 @@
           </q-item-section>
           <q-item-section>
             <q-item to="/privado/lancamento/pesquisa">
-              <q-item-label>Lançamento</q-item-label>
+              <q-item-label>Lançamentos</q-item-label>
             </q-item>
           </q-item-section>
         </q-item>
